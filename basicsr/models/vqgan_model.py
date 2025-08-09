@@ -140,11 +140,13 @@ class VQGANModel(SRModel):
             if self.cri_pix:
                 l_g_pix = self.cri_pix(self.output, self.gt)
                 l_g_total += l_g_pix
+                
                 loss_dict['l_g_pix'] = l_g_pix
             # perceptual loss
             if self.cri_perceptual:
                 l_g_percep = self.cri_perceptual(self.output, self.gt)
                 l_g_total += l_g_percep
+                
                 loss_dict['l_g_percep'] = l_g_percep
 
             # gan loss
@@ -158,9 +160,10 @@ class VQGANModel(SRModel):
                 d_weight *= self.adopt_weight(1, current_iter, self.net_d_start_iter)
                 d_weight *= self.disc_weight # tamming setting 0.8
                 l_g_total += d_weight * l_g_gan
+                
                 loss_dict['l_g_gan'] = d_weight * l_g_gan
 
-            l_g_total += l_codebook
+            l_g_total += l_codebook # error
             loss_dict['l_codebook'] = l_codebook
 
             l_g_total.backward()

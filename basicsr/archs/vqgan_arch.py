@@ -61,7 +61,7 @@ class VectorQuantizer(nn.Module):
         # reshape back to match original input shape
         z_q = z_q.permute(0, 3, 1, 2).contiguous()
         self.tmp = z_q.detach().cpu().numpy()
-
+        
         return z_q, loss, {
             "perplexity": perplexity,
             "min_encodings": min_encodings,
