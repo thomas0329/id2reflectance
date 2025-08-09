@@ -9,8 +9,8 @@ datasets:
   train:
     name: FFHQPBRMIX
     type: FFHQPBRMIXDataset
-    datapath_pbrdomain: "PBR dataset PATH"
-    datapath_ffhq: "FFHQ dataset PATH"
+    datapath_pbrdomain: "MiniSet/Refl"
+    datapath_ffhq: "MiniSet/RGB"
     filename_tmpl: '{}'
     io_backend:
       type: disk
@@ -23,8 +23,8 @@ datasets:
     use_corrupt: false # for VQGAN
 
     # data loader
-    num_worker_per_gpu: 2
-    batch_size_per_gpu: 3
+    num_worker_per_gpu: 1
+    batch_size_per_gpu: 2
     dataset_enlarge_ratio: 100
 
     prefetch_mode: cpu

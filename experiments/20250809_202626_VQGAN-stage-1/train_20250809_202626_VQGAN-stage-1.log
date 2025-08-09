@@ -1,0 +1,414 @@
+2025-08-09 20:26:26,609 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.3.2
+	PyTorch: 2.4.1+cu121
+	TorchVision: 0.19.1+cu121
+2025-08-09 20:26:26,609 INFO: 
+  name: 20250809_202626_VQGAN-stage-1
+  model_type: VQGANModel
+  num_gpu: 4
+  manual_seed: 0
+  datasets:[
+    train:[
+      name: FFHQPBRMIX
+      type: FFHQPBRMIXDataset
+      datapath_pbrdomain: MiniSet/Refl
+      datapath_ffhq: MiniSet/RGB
+      filename_tmpl: {}
+      io_backend:[
+        type: disk
+      ]
+      in_size: 512
+      gt_size: 512
+      mean: [0.5, 0.5, 0.5]
+      std: [0.5, 0.5, 0.5]
+      use_hflip: True
+      use_corrupt: False
+      num_worker_per_gpu: 1
+      batch_size_per_gpu: 2
+      dataset_enlarge_ratio: 100
+      prefetch_mode: cpu
+      num_prefetch_queue: 4
+      phase: train
+    ]
+  ]
+  network_g:[
+    type: VQAutoEncoder
+    img_size: 512
+    nf: 64
+    ch_mult: [1, 2, 2, 4, 4, 8]
+    quantizer: nearest
+    codebook_size: 1024
+  ]
+  network_d:[
+    type: VQGANDiscriminator
+    nc: 3
+    ndf: 64
+  ]
+  path:[
+    pretrain_network_g: None
+    param_key_g: params_ema
+    strict_load_g: True
+    pretrain_network_d: None
+    strict_load_d: True
+    resume_state: None
+    experiments_root: /mnt/sdc/r13942140/id2reflectance/experiments/20250809_202626_VQGAN-stage-1
+    models: /mnt/sdc/r13942140/id2reflectance/experiments/20250809_202626_VQGAN-stage-1/models
+    training_states: /mnt/sdc/r13942140/id2reflectance/experiments/20250809_202626_VQGAN-stage-1/training_states
+    log: /mnt/sdc/r13942140/id2reflectance/experiments/20250809_202626_VQGAN-stage-1
+    visualization: /mnt/sdc/r13942140/id2reflectance/experiments/20250809_202626_VQGAN-stage-1/visualization
+  ]
+  train:[
+    optim_g:[
+      type: Adam
+      lr: 8e-05
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    optim_d:[
+      type: Adam
+      lr: 8e-05
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    scheduler:[
+      type: CosineAnnealingRestartLR
+      periods: [700000]
+      restart_weights: [1]
+      eta_min: 6e-05
+    ]
+    total_iter: 700000
+    warmup_iter: -1
+    ema_decay: 0.995
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 1.0
+      reduction: mean
+    ]
+    perceptual_opt:[
+      type: LPIPSLoss
+      loss_weight: 1.0
+      use_input_norm: True
+      range_norm: True
+    ]
+    gan_opt:[
+      type: GANLoss
+      gan_type: hinge
+      loss_weight: 1.0
+    ]
+    net_g_start_iter: 0
+    net_d_iters: 1
+    net_d_start_iter: 30001
+    manual_seed: 0
+  ]
+  val:[
+    val_freq: 50000000000.0
+    save_img: True
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 4
+        test_y_channel: False
+      ]
+    ]
+  ]
+  logger:[
+    print_freq: 100
+    save_checkpoint_freq: 10000.0
+    use_tb_logger: True
+    wandb:[
+      project: None
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29411
+  ]
+  find_unused_parameters: True
+  is_train: True
+  dist: False
+  rank: 0
+  world_size: 1
+
+2025-08-09 20:26:26,634 INFO: Use random gray. Prob: 0.0
+2025-08-09 20:26:26,634 INFO: Dataset [FFHQPBRMIXDataset] - FFHQPBRMIX is built.
+2025-08-09 20:26:26,634 INFO: Use cpu prefetch dataloader: num_prefetch_queue = 4
+2025-08-09 20:26:26,634 INFO: Training statistics:
+	Number of train images: 6
+	Dataset enlarge ratio: 100
+	Batch size per gpu: 2
+	World size (gpu number): 1
+	Require iter number per epoch: 300
+	Total epochs: 2334; iters: 700000.
+2025-08-09 20:26:26,854 INFO: Network [VQAutoEncoder] is created.
+2025-08-09 20:26:27,000 INFO: Network: DataParallel - VQAutoEncoder, with parameters: 63,740,099
+2025-08-09 20:26:27,000 INFO: VQAutoEncoder(
+  (encoder): Encoder(
+    (blocks): ModuleList(
+      (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1-2): 2 x ResBlock(
+        (norm1): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (3): Downsample(
+        (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2))
+      )
+      (4): ResBlock(
+        (norm1): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv1): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (5): ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (6): Downsample(
+        (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2))
+      )
+      (7-8): 2 x ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (9): Downsample(
+        (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2))
+      )
+      (10): ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (11): ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (12): Downsample(
+        (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2))
+      )
+      (13-14): 2 x ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (15): Downsample(
+        (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2))
+      )
+      (16): ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (17): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (18): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (19): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (20): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (21): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (22): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (23): GroupNorm(32, 512, eps=1e-06, affine=True)
+      (24): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+  )
+  (quantize): VectorQuantizer(
+    (embedding): Embedding(1024, 256)
+  )
+  (generator): Generator(
+    (blocks): ModuleList(
+      (0): Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (2): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (3-4): 2 x ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (5): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (6): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (7): AttnBlock(
+        (norm): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (q): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (k): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (v): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+        (proj_out): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (8): Upsample(
+        (conv): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (9): ResBlock(
+        (norm1): GroupNorm(32, 512, eps=1e-06, affine=True)
+        (conv1): Conv2d(512, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (10): ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (11): Upsample(
+        (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (12-13): 2 x ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (14): Upsample(
+        (conv): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (15): ResBlock(
+        (norm1): GroupNorm(32, 256, eps=1e-06, affine=True)
+        (conv1): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (16): ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (17): Upsample(
+        (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (18-19): 2 x ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (20): Upsample(
+        (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (21): ResBlock(
+        (norm1): GroupNorm(32, 128, eps=1e-06, affine=True)
+        (conv1): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (conv_out): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+      )
+      (22): ResBlock(
+        (norm1): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        (norm2): GroupNorm(32, 64, eps=1e-06, affine=True)
+        (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (23): GroupNorm(32, 64, eps=1e-06, affine=True)
+      (24): Conv2d(64, 3, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    )
+  )
+)
+2025-08-09 20:26:27,000 INFO: Use Exponential Moving Average with decay: 0.995
+2025-08-09 20:26:27,209 INFO: Network [VQAutoEncoder] is created.
+2025-08-09 20:26:27,287 INFO: Network [VQGANDiscriminator] is created.
+2025-08-09 20:26:27,292 INFO: Network: DataParallel - VQGANDiscriminator, with parameters: 6,960,961
+2025-08-09 20:26:27,292 INFO: VQGANDiscriminator(
+  (main): Sequential(
+    (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (1): LeakyReLU(negative_slope=0.2, inplace=True)
+    (2): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): LeakyReLU(negative_slope=0.2, inplace=True)
+    (5): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (6): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): LeakyReLU(negative_slope=0.2, inplace=True)
+    (8): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+    (9): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (10): LeakyReLU(negative_slope=0.2, inplace=True)
+    (11): Conv2d(512, 512, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1), bias=False)
+    (12): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (13): LeakyReLU(negative_slope=0.2, inplace=True)
+    (14): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(1, 1))
+  )
+)
+2025-08-09 20:26:27,292 INFO: Loss [L1Loss] is created.
+2025-08-09 20:26:27,921 INFO: Loss [LPIPSLoss] is created.
+2025-08-09 20:26:27,931 INFO: Loss [GANLoss] is created.
+2025-08-09 20:26:27,931 INFO: vqgan_quantizer: nearest
+2025-08-09 20:26:27,932 INFO: Model [VQGANModel] is created.
+2025-08-09 20:26:27,978 INFO: Start training from epoch: 0, iter: 1

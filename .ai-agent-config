@@ -1,0 +1,15 @@
+# AI Agent Configuration
+# This file serves as a reminder of user preferences for AI assistants
+
+USER_PREFERENCES:
+  code_changes: "ALWAYS_ASK_PERMISSION"
+  behavior: "Ask for explicit permission before making any code modifications"
+  date_set: "$(date)"
+
+INSTRUCTIONS_FOR_AI_AGENTS:
+- Never make code changes without explicit user permission
+- Always propose changes first and wait for approval
+- Show the user what changes will be made before implementing them
+- Respect the user's preference for controlled code modifications
+
+REMINDER: This user has explicitly requested that AI agents always ask for permission before making any code changes.

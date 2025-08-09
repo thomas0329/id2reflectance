@@ -116,6 +116,31 @@ class FFHQPBRMIXDataset(data.Dataset):
         self.color_jitter_shift /= 255.
 
     @staticmethod
+    def pad_to_square_with_background(img):
+        """Pad non-square image to square using background color from corners"""
+        h, w = img.shape[:2]
+        if h == w:
+            return img
+        
+        # Use corner pixels to estimate background color
+        corners = [img[0,0], img[0,-1], img[-1,0], img[-1,-1]]
+        bg_color = np.mean(corners, axis=0)
+        
+        # Create square canvas with background color
+        max_dim = max(h, w)
+        if len(img.shape) == 3:
+            square_img = np.full((max_dim, max_dim, img.shape[2]), bg_color, dtype=img.dtype)
+        else:
+            square_img = np.full((max_dim, max_dim), bg_color, dtype=img.dtype)
+        
+        # Center the original image
+        y_offset = (max_dim - h) // 2
+        x_offset = (max_dim - w) // 2
+        square_img[y_offset:y_offset+h, x_offset:x_offset+w] = img
+        
+        return square_img
+
+    @staticmethod
     def color_jitter(img, shift):
         """jitter color: randomly jitter the RGB values, in numpy formats"""
         jitter_val = np.random.uniform(-shift, shift, 3).astype(np.float32)
@@ -193,8 +218,24 @@ class FFHQPBRMIXDataset(data.Dataset):
         img_bytes = self.file_client.get(gt_path)
         img_gt = imfrombytes(img_bytes, float32=True)
         
+        # Determine image type and apply appropriate preprocessing
+        is_rgb_image = '/RGB/' in gt_path
+        is_refl_image = '/Refl/' in gt_path
+        
+        if is_rgb_image:
+            # RGB images: pad to square first, then resize
+            img_gt = self.pad_to_square_with_background(img_gt)
+            img_gt = cv2.resize(img_gt, (self.gt_size, self.gt_size), interpolation=cv2.INTER_LINEAR)
+        elif is_refl_image:
+            # Refl images: directly resize (already square)
+            img_gt = cv2.resize(img_gt, (self.gt_size, self.gt_size), interpolation=cv2.INTER_LINEAR)
+        else:
+            # Default behavior for other images (original FFHQ, etc.)
+            img_gt = cv2.resize(img_gt, (self.gt_size, self.gt_size), interpolation=cv2.INTER_LINEAR)
+        
         # random horizontal flip
         img_gt, status = augment(img_gt, hflip=self.opt['use_hflip'], rotation=False, return_status=True)
+        
 
         if self.load_latent_gt:
             if status[0]:
@@ -205,8 +246,8 @@ class FFHQPBRMIXDataset(data.Dataset):
         if self.crop_components:
             locations_gt, locations_in = self.get_component_locations(name, status)
 
-        # generate in image
-        img_in = img_gt
+        # generate in image (img_in starts as copy of img_gt, which is already properly sized)
+        img_in = img_gt.copy()
         if self.use_corrupt and not self.gen_inpaint_mask:
             # motion blur
             if self.use_motion_kernel and random.random() < self.motion_kernel_prob:
@@ -244,6 +285,9 @@ class FFHQPBRMIXDataset(data.Dataset):
             #     img_in = np.float32(cv2.imdecode(encimg, 1)) / 255.
 
             # resize to in_size
+            img_in = cv2.resize(img_in, (self.in_size, self.in_size), interpolation=cv2.INTER_LINEAR)
+        else:
+            # If no corruption, ensure img_in is still resized to in_size
             img_in = cv2.resize(img_in, (self.in_size, self.in_size), interpolation=cv2.INTER_LINEAR)
 
         # if self.gen_inpaint_mask:
