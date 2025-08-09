@@ -1,7 +1,7 @@
 # general settings
 name: VQGAN-stage-1
 model_type: VQGANModel
-num_gpu: 1
+num_gpu: 2
 manual_seed: 0
 
 # dataset and data loader settings
@@ -24,7 +24,7 @@ datasets:
 
     # data loader
     num_worker_per_gpu: 1
-    batch_size_per_gpu: 1
+    batch_size_per_gpu: 3
     dataset_enlarge_ratio: 100
 
     prefetch_mode: cpu

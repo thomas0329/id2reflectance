@@ -1,7 +1,7 @@
 # general settings
 name: VQGAN-stage-2
 model_type: VQGANModel
-num_gpu: 1
+num_gpu: 2
 manual_seed: 0
 
 # dataset and data loader settings
