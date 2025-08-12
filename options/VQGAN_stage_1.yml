@@ -106,7 +106,7 @@ train:
   net_g_start_iter: 0
   net_d_iters: 1
   # net_d_start_iter: 30001
-  net_d_start_iter: 8000
+  net_d_start_iter: 8001
   manual_seed: 0
 
 # validation settings
@@ -123,7 +123,7 @@ val:
 # logging settings
 logger:
   print_freq: 100
-  save_checkpoint_freq: !!float 1e4
+  save_checkpoint_freq: !!float 8e3
   use_tb_logger: true
   wandb:
     project: ~

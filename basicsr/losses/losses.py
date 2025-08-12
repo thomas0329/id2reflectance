@@ -388,7 +388,8 @@ class GANLoss(nn.Module):
         target_val = (self.real_label_val if target_is_real else self.fake_label_val)
         return input.new_ones(input.size()) * target_val
 
-    def forward(self, input, target_is_real, is_disc=False):
+    def forward(self, input, target_is_real, is_disc=False):    
+                   # (fake_g_pred, True, is_disc=False)
         """
         Args:
             input (Tensor): The input for the loss module, i.e., the network

@@ -150,9 +150,10 @@ class VQGANModel(SRModel):
                 loss_dict['l_g_percep'] = l_g_percep
 
             # gan loss
+            # optimize net_g
             if current_iter > self.net_d_start_iter:
                 # fake_g_pred = self.net_d(self.output_1024)
-                fake_g_pred = self.net_d(self.output)
+                fake_g_pred = self.net_d(self.output)   # goal: fake_g_pred = 1
                 l_g_gan = self.cri_gan(fake_g_pred, True, is_disc=False)
                 recon_loss = l_g_total
                 last_layer = self.net_g.module.generator.blocks[-1].weight
@@ -178,14 +179,14 @@ class VQGANModel(SRModel):
             # real
             real_d_pred = self.net_d(self.gt)
             l_d_real = self.cri_gan(real_d_pred, True, is_disc=True)
-            loss_dict['l_d_real'] = l_d_real
-            loss_dict['out_d_real'] = torch.mean(real_d_pred.detach())
+            loss_dict['l_d_real'] = l_d_real    # loss
+            loss_dict['out_d_real'] = torch.mean(real_d_pred.detach())  # disc output. goal: 1
             l_d_real.backward()
             # fake
             fake_d_pred = self.net_d(self.output.detach())
             l_d_fake = self.cri_gan(fake_d_pred, False, is_disc=True)
             loss_dict['l_d_fake'] = l_d_fake
-            loss_dict['out_d_fake'] = torch.mean(fake_d_pred.detach())
+            loss_dict['out_d_fake'] = torch.mean(fake_d_pred.detach())  # disc output. goal: 0
             l_d_fake.backward()
             self.optimizer_d.step()
 
