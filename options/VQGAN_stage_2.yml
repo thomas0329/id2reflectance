@@ -79,7 +79,8 @@ train:
 
   scheduler:
     type: CosineAnnealingRestartLR
-    periods: [27000]
+    # periods: [27000]
+    periods: [270000]
     restart_weights: [1]
     eta_min: !!float 6e-5 # no lr reduce in official vqgan code
 
