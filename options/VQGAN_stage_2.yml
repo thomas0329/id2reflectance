@@ -9,7 +9,7 @@ datasets:
   train:
     name: FFHQPBRMIX
     type: FFHQPBRMIXDataset
-    datapath_pbrdomain: "MiniSet/Normal"
+    datapath_pbrdomain: "MiniSet/BC"
     datapath_ffhq: "MiniSet/RGB"
     filename_tmpl: '{}'
     io_backend:
@@ -57,10 +57,10 @@ network_d:
 
 # path
 path:
-  pretrain_network_g: "experiments/usable/models/net_g_8000.pth"
+  pretrain_network_g: "experiments/stage-1/models/net_g_8000.pth"
   param_key_g: params_ema
   strict_load_g: true
-  pretrain_network_d: "experiments/usable/models/net_d_8000.pth"
+  pretrain_network_d: "experiments/stage-1/models/net_d_8000.pth"
   strict_load_d: true
   resume_state: ~
 
