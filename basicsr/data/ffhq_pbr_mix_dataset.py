@@ -196,6 +196,10 @@ class FFHQPBRMIXDataset(data.Dataset):
         # random horizontal flip
         img_gt, status = augment(img_gt, hflip=self.opt['use_hflip'], rotation=False, return_status=True)
 
+        # ensure gt is exactly gt_size (e.g., 512x512) without modifying files on disk
+        if (img_gt.shape[0] != self.gt_size) or (img_gt.shape[1] != self.gt_size):
+            img_gt = cv2.resize(img_gt, (self.gt_size, self.gt_size), interpolation=cv2.INTER_AREA)
+
         if self.load_latent_gt:
             if status[0]:
                 latent_gt = self.latent_gt_dict['hflip'][name]

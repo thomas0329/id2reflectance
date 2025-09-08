@@ -1,7 +1,7 @@
 # general settings
 name: VQGAN-stage-1
 model_type: VQGANModel
-num_gpu: 4
+num_gpu: 2
 manual_seed: 0
 
 # dataset and data loader settings
@@ -9,8 +9,8 @@ datasets:
   train:
     name: FFHQPBRMIX
     type: FFHQPBRMIXDataset
-    datapath_pbrdomain: "PBR dataset PATH"
-    datapath_ffhq: "FFHQ dataset PATH"
+    datapath_pbrdomain: "MiniSet_20/train/Refl"
+    datapath_ffhq: "/mnt/sdb/ffhq-dataset/images1024x1024/"
     filename_tmpl: '{}'
     io_backend:
       type: disk
