@@ -1,7 +1,7 @@
 # general settings
 name: vqswap
 model_type: SwapperModel
-num_gpu: 4
+num_gpu: 1
 manual_seed: 0
 
 # dataset and data loader settings
@@ -9,7 +9,7 @@ datasets:
   train:
     name: VGGHQ
     type: VGGHQFSDataset
-    dataroot_gt: 'VGGFACE 512 DATAPATH'
+    dataroot_gt: '../VGGface2_HQ_zips/VGGface2_None_norm_512_true_bygfpgan/'
     filename_tmpl: '{}'
     io_backend:
       type: disk
@@ -27,14 +27,14 @@ datasets:
     
 # network structures
 network_g:
-  type: SwapperR1
+  type: Swapper
   dim_embd: 512
   n_head: 8
   n_layers: 9
   codebook_size: 1024
   connect_list: ['16', '32', '64', '128']
   fix_modules: ['encoder','quantize','generator']
-  vqgan_path: "STAGE-2—SUM-PretrainedModel" # pretrained VQGAN
+  vqgan_path: "stage-1-ffhq/net_g_530000.pth" # pretrained VQGAN
 
 network_vqgan: # this config is needed if no pre-calculated latent
   type: VQAutoEncoder
