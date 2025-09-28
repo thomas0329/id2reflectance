@@ -9,7 +9,7 @@ datasets:
   train:
     name: VGGHQ
     type: VGGHQFSDataset
-    dataroot_gt: '../VGGface2_HQ_zips/VGGface2_None_norm_512_true_bygfpgan/'
+    dataroot_gt: '/mnt/sdb/VGGface2_None_norm_512_true_bygfpgan/'
     filename_tmpl: '{}'
     io_backend:
       type: disk
@@ -34,7 +34,7 @@ network_g:
   codebook_size: 1024
   connect_list: ['16', '32', '64', '128']
   fix_modules: ['encoder','quantize','generator']
-  vqgan_path: "stage-1-ffhq/net_g_530000.pth" # pretrained VQGAN
+  vqgan_path: "experiments/VQGAN-stage-1_ffhq/models/net_g_530000.pth" # pretrained VQGAN
 
 network_vqgan: # this config is needed if no pre-calculated latent
   type: VQAutoEncoder

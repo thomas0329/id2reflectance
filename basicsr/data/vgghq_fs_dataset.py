@@ -57,6 +57,8 @@ class VGGHQFSDataset(data.Dataset):
 
         filename1 = dir_tmp1[random.randint(0, dir_tmp1_len - 1)]
         filename2 = dir_tmp1[random.randint(0, dir_tmp1_len - 1)]
+        print(f"DEBUG: filename1: {filename1}")
+        print(f"DEBUG: filename2: {filename2}")
 
         # load gt image
         img_bytes1 = self.file_client.get(filename1)
